@@ -7,10 +7,14 @@ from openai import OpenAI
 from dotenv import load_dotenv
 
 # -------------------------------
-# Load environment variables from .env or GitHub Secrets
+# Load .env only if present (local development)
 # -------------------------------
-load_dotenv()
+if os.path.exists(".env"):
+    load_dotenv()
 
+# -------------------------------
+# Environment variables
+# -------------------------------
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 CLICKUP_API_TOKEN = os.getenv("CLICKUP_API_KEY")
 TASK_ID = os.getenv("CLICKUP_TASK_ID")
