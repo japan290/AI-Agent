@@ -7,19 +7,25 @@ from openai import OpenAI
 from dotenv import load_dotenv
 
 # -------------------------------
-# Load .env only if present (local development)
+# Load .env only if it exists (for local testing)
 # -------------------------------
 if os.path.exists(".env"):
     load_dotenv()
 
 # -------------------------------
 # Environment variables
+# Must match GitHub workflow env names
 # -------------------------------
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-CLICKUP_API_TOKEN = os.getenv("CLICKUP_API_KEY")
+CLICKUP_API_KEY = os.getenv("CLICKUP_API_KEY")
 TASK_ID = os.getenv("CLICKUP_TASK_ID")
 
-if not all([OPENAI_API_KEY, CLICKUP_API_TOKEN, TASK_ID]):
+# Debug: Check if env vars are loaded
+print("OPENAI_API_KEY loaded:", bool(OPENAI_API_KEY))
+print("CLICKUP_API_KEY loaded:", bool(CLICKUP_API_KEY))
+print("TASK_ID loaded:", bool(TASK_ID))
+
+if not all([OPENAI_API_KEY, CLICKUP_API_KEY, TASK_ID]):
     raise ValueError("Missing environment variables. Make sure OPENAI_API_KEY, CLICKUP_API_KEY, and CLICKUP_TASK_ID are set.")
 
 # -------------------------------
@@ -147,8 +153,8 @@ def group_models(model_statuses):
 
 def update_clickup_task(report_text: str):
     """Replace the description of an existing ClickUp task."""
-    url = f"https://api.clickup.com/api/v2/task/{TASK_ID}"  # plain URL
-    headers = {"Authorization": CLICKUP_API_TOKEN, "Content-Type": "application/json"}
+    url = f"https://api.clickup.com/api/v2/task/{TASK_ID}"
+    headers = {"Authorization": CLICKUP_API_KEY, "Content-Type": "application/json"}
     payload = {"description": report_text}
 
     response = requests.put(url, headers=headers, json=payload)
@@ -166,7 +172,6 @@ if __name__ == "__main__":
     model_statuses = classify_models(models_to_classify)
     new_models = fetch_recent_ai_models(days=DAYS_TO_FETCH)
 
-    # Build report
     report_lines = []
     report_lines.append("📌 **AI Model Lifecycle Report**")
     report_lines.append(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
@@ -189,9 +194,6 @@ if __name__ == "__main__":
 
     final_report = "\n".join(report_lines)
 
-    # -------------------------------
-    # Compare with cached report
-    # -------------------------------
     last_report = ""
     if os.path.exists(CACHE_FILE):
         with open(CACHE_FILE, "r", encoding="utf-8") as f:
