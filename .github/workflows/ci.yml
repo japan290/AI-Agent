@@ -1,36 +1,30 @@
-name: AI Model Report Updater
+name: AI Model Report
 
 on:
   schedule:
-    - cron: '0 5 * * *'  # Runs daily at 5:00 AM UTC
-  workflow_dispatch:
+    # Runs at 11:30 AM every day (UTC time)
+    - cron: '30 11 * * *'
+  workflow_dispatch: # Allows manual run
 
 jobs:
-  run-report-script:
+  generate-report:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
 
     steps:
-      - name: ⬇️ Checkout code
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      - name: 🐍 Set up Python
-        uses: actions/setup-python@v5
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
+          python-version: '3.13'
 
-      - name: 🛠️ Install system dependencies for lxml
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libxml2-dev libxslt-dev
-
-      - name: 📦 Install Python dependencies
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: ⚙️ Run AI Model Reporter Script
+      - name: Run AI Model Report
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           CLICKUP_API_KEY: ${{ secrets.CLICKUP_API_KEY }}
