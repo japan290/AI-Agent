@@ -2,8 +2,7 @@ name: AI Model Report Updater
 
 on:
   schedule:
-    # Runs at 5:00 AM UTC every day
-    - cron: '0 5 * * *'
+    - cron: '0 5 * * *'  # Runs daily at 5:00 AM UTC
   workflow_dispatch:
 
 jobs:
@@ -13,27 +12,27 @@ jobs:
       contents: write
 
     steps:
-    - name: ⬇️ Checkout code
-      uses: actions/checkout@v4
+      - name: ⬇️ Checkout code
+        uses: actions/checkout@v4
 
-    - name: 🐍 Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.x'
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
 
-    - name: 🛠️ Install system dependencies for lxml
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y libxml2-dev libxslt-dev
+      - name: 🛠️ Install system dependencies for lxml
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libxml2-dev libxslt-dev
 
-    - name: 📦 Install Python dependencies from requirements.txt
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+      - name: 📦 Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-    - name: ⚙️ Run the AI Model Reporter Script
-      env:
-        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        CLICKUP_API_KEY: ${{ secrets.CLICKUP_API_KEY }}
-        CLICKUP_TASK_ID: ${{ secrets.CLICKUP_TASK_ID }}
-      run: python full.py
+      - name: ⚙️ Run AI Model Reporter Script
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          CLICKUP_API_KEY: ${{ secrets.CLICKUP_API_KEY }}
+          CLICKUP_TASK_ID: ${{ secrets.CLICKUP_TASK_ID }}
+        run: python full.py
