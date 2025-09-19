@@ -16,7 +16,7 @@ if os.path.exists(".env"):
 # Environment variables
 # Must match GitHub workflow env names
 # -------------------------------
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+OPENAI_API_KEY = "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"
 CLICKUP_API_KEY = os.getenv("CLICKUP_API_KEY")
 TASK_ID = os.getenv("CLICKUP_TASK_ID")
 
