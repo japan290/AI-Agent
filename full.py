@@ -21,7 +21,7 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 # -------------------------------
 CLICKUP_API_TOKEN = os.getenv("CLICKUP_API_KEY")
 TASK_ID = os.getenv("CLICKUP_TASK_ID")
-CLICKUP_URL = f"https://api.clickup.com/api/v2/task/{TASK_ID}/comment"
+
 # -------------------------------
 # Constants
 # -------------------------------
