@@ -7,29 +7,28 @@ from openai import OpenAI
 from dotenv import load_dotenv
 
 # -------------------------------
-# Load environment variables from .env file
+# Load environment variables from .env or GitHub Secrets
 # -------------------------------
 load_dotenv()
+
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+CLICKUP_API_TOKEN = os.getenv("CLICKUP_API_KEY")
+TASK_ID = os.getenv("CLICKUP_TASK_ID")
+
+if not all([OPENAI_API_KEY, CLICKUP_API_TOKEN, TASK_ID]):
+    raise ValueError("Missing environment variables. Make sure OPENAI_API_KEY, CLICKUP_API_KEY, and CLICKUP_TASK_ID are set.")
 
 # -------------------------------
 # Initialize OpenAI client
 # -------------------------------
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
-# -------------------------------
-# ClickUp Configuration (from env)
-# -------------------------------
-CLICKUP_API_TOKEN = os.getenv("CLICKUP_API_KEY")
-TASK_ID = os.getenv("CLICKUP_TASK_ID")
-CLICKUP_URL = f"https://api.clickup.com/api/v2/task/{TASK_ID}"
-
+client = OpenAI(api_key=OPENAI_API_KEY)
 
 # -------------------------------
 # Constants
 # -------------------------------
 CSV_URL = "https://epoch.ai/data/generated/all_ai_models.csv"
 DAYS_TO_FETCH = 20
-CACHE_FILE = "last_report.txt"  # Local cache file
+CACHE_FILE = "last_report.txt"
 
 PROMPT = """
 You are a model lifecycle checker.
@@ -143,8 +142,8 @@ def group_models(model_statuses):
     return groups
 
 def update_clickup_task(report_text: str):
-    """Replace the description of an existing ClickUp task with report_text."""
-    url = f"[https://api.clickup.com/api/v2/task/](https://api.clickup.com/api/v2/task/){TASK_ID}"
+    """Replace the description of an existing ClickUp task."""
+    url = f"https://api.clickup.com/api/v2/task/{TASK_ID}"  # plain URL
     headers = {"Authorization": CLICKUP_API_TOKEN, "Content-Type": "application/json"}
     payload = {"description": report_text}
 
@@ -163,7 +162,7 @@ if __name__ == "__main__":
     model_statuses = classify_models(models_to_classify)
     new_models = fetch_recent_ai_models(days=DAYS_TO_FETCH)
 
-    # Build one big report string
+    # Build report
     report_lines = []
     report_lines.append("📌 **AI Model Lifecycle Report**")
     report_lines.append(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
@@ -187,7 +186,7 @@ if __name__ == "__main__":
     final_report = "\n".join(report_lines)
 
     # -------------------------------
-    # Compare with last cached report
+    # Compare with cached report
     # -------------------------------
     last_report = ""
     if os.path.exists(CACHE_FILE):
