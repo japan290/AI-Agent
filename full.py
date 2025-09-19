@@ -147,7 +147,7 @@ def update_clickup_task(report_text: str):
 # Main Execution
 # -------------------------------
 if __name__ == "__main__":
-    models_to_classify = read_models_from_file("models.txt")
+    models_to_classify = read_models_from_file("modles.txt")
     model_statuses = classify_models(models_to_classify)
     new_models = fetch_recent_ai_models(days=DAYS_TO_FETCH)
 
