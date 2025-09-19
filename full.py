@@ -123,8 +123,6 @@ def get_model_summary(model_name):
         summary = response.choices[0].message.content.strip().replace("\n", " ")
         summary_cache[model_name] = summary
         return summary
-    except Exception:
-        return "No summary available."
 
 def group_models(model_statuses):
     groups = {}
